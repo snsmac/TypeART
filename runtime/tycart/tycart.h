@@ -50,6 +50,11 @@ void __tycart_register_FTI_t(int typeId);
  */
 void __tycart_register_FTI_t_stub(void* ptr);
 
+/*
+ * Returns the number of elements allocated
+ */
+size_t __tycart_alloc_count(void* ptr);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
@@ -119,6 +124,9 @@ void __tycart_register_FTI_t_stub(void* ptr);
 
 // Common API for restart
 #define TY_recover() { __tycart_cp_recover(); }
+
+// Returns the number of elements allocated
+#define TY_alloc_count(pointer)  __tycart_alloc_count(pointer)
 
 //
 // clang-format on

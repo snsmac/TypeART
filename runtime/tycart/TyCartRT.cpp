@@ -287,19 +287,7 @@ inline int TYdereg(int id) {
   return 0;
 }
 
-}  // namespace tycart
-
-void __tycart_assert(int id, void* addr, size_t count, size_t typeSize, int typeId) {
-  LOG_TRACE("Entering" << __FUNCTION__);
-  int err = tycart::TYassert(id, addr, count, typeSize, typeId);
-}
-
-void __tycart_cp_assert() {
-  LOG_TRACE("Entering" << __FUNCTION__);
-  tycart::TYassert_cp();
-}
-
-void __tycart_assert_auto(int id, void* addr, size_t typeSize, int typeId) {
+inline size_t TYalloc_count(void* addr) {
   const auto fail = [&](std::string msg) -> void {
     LOG_FATAL("Assert failed: " << msg);
     exit(EXIT_FAILURE);
@@ -336,6 +324,23 @@ void __tycart_assert_auto(int id, void* addr, size_t typeSize, int typeId) {
   };
   get_type(addr);
   LOG_INFO("The actual count was: " << actualCount);
+  return actualCount;
+}
+
+}  // namespace tycart
+
+void __tycart_assert(int id, void* addr, size_t count, size_t typeSize, int typeId) {
+  LOG_TRACE("Entering" << __FUNCTION__);
+  int err = tycart::TYassert(id, addr, count, typeSize, typeId);
+}
+
+void __tycart_cp_assert() {
+  LOG_TRACE("Entering" << __FUNCTION__);
+  tycart::TYassert_cp();
+}
+
+void __tycart_assert_auto(int id, void* addr, size_t typeSize, int typeId) {
+  const size_t actualCount = tycart::TYalloc_count(addr);
   __tycart_assert(id, addr, actualCount, typeSize, typeId);
   /* Output the information into some file, that the user can access later */
 }
@@ -397,4 +402,8 @@ void __tycart_cp_recover(const char*name, int version) {
     }
   }
 #endif
+}
+
+size_t __tycart_alloc_count(void* ptr) {
+  return tycart::TYalloc_count(ptr);
 }
